@@ -1,0 +1,203 @@
+Notice:
+
+This code was used to generate plot for the following study results cited as: Jahanian Najafabadi, A., Küster, D., Putze, F. et al. Tool-use training in augmented reality: plasticity of forearm body schema does not predict sense of ownership or agency in older adults. Exp Brain Res 241, 1739–1756 (2023). https://doi.org/10.1007/s00221-023-06645-2.
+This study is part of PALMS project funded by Deutsche Forschungsgemeinschaft (DFG, German Research Foundation – 402779631).
+
+
+
+
+#install.packages("readxl")
+library("readxl")
+my_data <- read_excel("Link to directory_filename.xlsx")
+
+head(my_data)
+
+#install.packages("tidyr")
+library(tidyr)
+
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("ggplot2")
+library(ggplot2) 
+
+#install.packages("sjPlot")
+library(sjPlot) 
+
+#install.packages("sjlabelled")
+library(sjlabelled) 
+
+#install.packages("sjmisc")
+library(sjmisc) 
+
+#install.packages("jtools")
+library(jtools) 
+
+#install.packages("ggstance")
+library(ggstance) 
+
+#install.packages("huxtable")
+library(huxtable) 
+
+#install.packages("gamlj")
+#library(gamlj)
+
+#install.packages("jmv")
+library(jmv) 
+
+#install.packages("jmvcore")
+library(jmvcore)
+
+#install.packages("car")
+library(car)
+
+#install.packages("report")
+library(report)
+
+#install.packages("ggcorrplot")
+library(ggcorrplot)
+
+#install.packages("corrplot")
+library(corrplot)
+
+
+options(contrasts=c("contr.sum", "contr.poly"))
+
+
+
+my_data$Orientation <- factor(my_data$Orientation)
+my_data$Session <- factor(my_data$Session)
+my_data$Lable <- factor(my_data$Lable, levels = c("Green","Blue","Yellow","Red"), labels=c("20.2","30.0","40.0","57.6"))
+my_data$Feedback <- factor(my_data$Feedback)
+my_data$Session <- factor(my_data$Session)
+my_data$Feedback <- factor(my_data$Feedback)
+my_data$Session <- factor(my_data$Session)
+my_data$Feedback <- factor(my_data$Feedback)
+
+
+set_theme(
+  geom.outline.color = "black", 
+  geom.outline.size = 1, 
+  geom.label.size = 2,
+  geom.label.color = "black",
+  title.color = "red", 
+  title.size = 1.5, 
+  axis.angle.x = 0, 
+  axis.textcolor = "black", 
+  base = theme_bw()
+)
+
+jmv::descriptives(
+  formula = ErrorBase_mm ~ Orientation:Distance_mm,
+  data = my_data,
+  box = TRUE,
+  dot = TRUE,
+  n = FALSE,
+  missing = FALSE,
+  mean = FALSE,
+  median = FALSE,
+  sd = FALSE,
+  min = FALSE,
+  max = FALSE)
+
+#contrasts can be applied only to factors with 2 or more levels
+asym<-lm(ErrorBase_mm ~ Orientation*Distance_mm,data = datasetW) 
+
+summary(report(asym))
+tab_model(asym, p.style="stars", auto.label = FALSE, show.std = TRUE, show.stat = TRUE)
+
+datasetMean <- read_excel("Link to directory_filename.xlsx", sheet = "Tabelle1")
+
+
+ggplot(data=datasetMean, aes(x=Res_Error_H,y=Res_Error_V)) +
+  geom_point(alpha=0.5) +
+  labs(x= "Mean Residual Error Mediolateral", y="Mean Residual Error Proximodistal") +
+  geom_abline(intercept = 0, slope = 1)
+#Error in FUN(X[[i]], ...) : object 'Res_Error_H' not found
+
+
+jmv::ttestPS(
+  data = datasetMean,
+  pairs = list(
+    list(
+      i1="Res_Error_H",
+      i2="Res_Error_V")),
+  wilcoxon = TRUE,
+  norm = TRUE,
+  meanDiff = TRUE,
+  effectSize = TRUE,
+  desc = TRUE)
+
+datasetW <- read_excel("Link to directory_filename.xlsx")
+
+jmv::ttestOneS(
+  data = datasetW,
+  vars = vars(RES_Error_mm),
+  wilcoxon = TRUE,
+  norm = TRUE,
+  desc = TRUE)
+
+TDJ<-lm(RES_Error_mm ~ Orientation*Session*Feedback,data = datasetW)
+summary(TDJ)
+
+tab_model(TDJ, p.style="stars", auto.label = FALSE, show.std = TRUE, show.stat = TRUE)
+
+datasetV2<-my_data[my_data$GLM_RES_Error_mm > (-60.),]
+
+BO_BA_desc <- descriptives(
+  formula = BO + BOr + BA + BAr ~ Session:Feedback,
+  data = my_data,
+  bar = FALSE)
+BO_BA_desc
+
+# bar plot with ggplot2
+# convert BO/BA to long
+data_long<-gather(my_data,BOA, measure, BO:BAr, factor_key = TRUE)
+
+# plot it
+ggplot(data=data_long) +
+  geom_boxplot(data=data_long, mapping=aes(x=Feedback, y=measure, fill=Session))+
+  labs(y="Ratings", x="Feedback order")+
+  geom_point(position=position_dodge(width=.75),aes(x=Feedback, y=measure, group=Session)) +
+  facet_wrap(~BOA, nrow=2)
+
+R_manova<-manova(cbind(BO, BOr, BA, BAr) ~Session*Feedback, data=my_data)
+summary(R_manova, test="Pillai")
+report(R_manova)
+
+##
+mBO <- lm(BO ~ Session*Feedback, data=my_data)
+mBOr <- lm(BOr ~ Session*Feedback, data=my_data)
+mBA <- lm(BA ~ Session*Feedback, data=my_data)
+mBAr <- lm(BAr ~ Session*Feedback, data=my_data)
+#
+summary(mBO)
+
+tab_model(mBO, p.style="stars", auto.label = FALSE, show.std = TRUE, show.stat = TRUE)
+
+summary(mBOr)
+
+tab_model(mBOr, p.style="stars", auto.label = FALSE, show.std = TRUE, show.stat = TRUE)
+
+summary(mBA)
+
+tab_model(mBA, p.style="stars", auto.label = FALSE, show.std = TRUE, show.stat = TRUE)
+
+summary(mBAr)
+tab_model(mBAr, p.style="stars", auto.label = FALSE, show.std = TRUE, show.stat = TRUE)
+
+jmv::corrMatrix(
+  data = datasetV2,
+  vars = vars(BO, BOr, BA, BAr, GLM_RES_Error_mm),
+  spearman = TRUE,
+  flag = TRUE)
+
+
+data_long<-data_long[data_long$GLM_RES_Error_mm > (-60.),]
+ggplot(aes(x=GLM_RES_Error_mm,y=measure), data=data_long) +
+  geom_point(alpha=0.5, group=data_long$BOA) +
+  labs(x= "Residual Estimation Error", y="BO rating")+
+  geom_smooth(method=lm)+
+  facet_wrap(~data_long$BOA, nrow=2)
+
+
+

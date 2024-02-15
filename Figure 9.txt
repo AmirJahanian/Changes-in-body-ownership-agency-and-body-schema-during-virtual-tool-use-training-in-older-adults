@@ -1,0 +1,116 @@
+Notice:
+
+This code was used to generate plot for the following study results cited as: Jahanian Najafabadi, A., Küster, D., Putze, F. et al. Tool-use training in augmented reality: plasticity of forearm body schema does not predict sense of ownership or agency in older adults. Exp Brain Res 241, 1739–1756 (2023). https://doi.org/10.1007/s00221-023-06645-2.
+This study is part of PALMS project funded by Deutsche Forschungsgemeinschaft (DFG, German Research Foundation – 402779631).
+
+
+
+
+datasetMean <- read_excel("Link to directory_filename.xlsx", sheet = "Tabelle1")
+ggplot(data=datasetMean, aes(x=Res_Error_H,y=Res_Error_V)) +
+    geom_point(alpha=0.5) +
+    labs(x= "Mean Residual Error Mediolateral", y="Mean Residual Error Proximodistal") +
+    geom_abline(intercept = 0, slope = 1)
+
+
+
+dataset <- read_excel("Link to directory_filename.xlsx.xlsx")
+
+
+
+
+datasetPE <- read_excel("Link to directory_filename.xlsx")
+
+
+
+
+data_long<-data_long2[data_long2$GLM_RES_Error_mm > (-60.),]
+> ggplot(aes(x=GLM_RES_Error_mm,y=measure), data=data_long2) +
++     geom_point(alpha=0.5, group=data_long2$BOA) +
++     labs(x= "Residual Estimation Error", y="Rating")+
++     geom_smooth(method=lm)+
++     facet_wrap(~data_long2$BOA, nrow=2)
+
+
+
+
+datasetOA <- read_excel("Link to directory_filename_Correlation Analyese.xlsx")
+data_long3
+
+For OA
+
+datasetCorr <- read_excel("Link to directory_filename.xlsx")
+
+data_long3<-gather(datasetCorr,BOA, measure, BO:BAr, factor_key = TRUE)
+
+
+### For RES_Error_mm   ==== Session & Feedback ;
+
+ggplot(data=data_long) +
+  geom_point(data=data_long, mapping=aes(x=RES_Error_mm, y=measure, color=Feedback, shape=Session))+
+  facet_wrap(~BOA, nrow=2)+
+  geom_smooth(data=data_long, mapping=aes(x=RES_Error_mm, y=measure), method='lm')+
+  xlim(-40,40)
+
+
+###For Learning effect ==== Session & Feedback ;
+
+datasetLearning <- read_excel("Link to directory_filename.xlsx")
+data_longLearning<-gather(datasetLearning,BOA, Ratings, BO:BAr, factor_key = TRUE)
+
+
+ggplot(data=data_longLearning) +
+  geom_point(data=data_longLearning, mapping=aes(x=Learning_Effect, y=Ratings, color=Feedback, shape=Session))+
+  facet_wrap(~BOA, nrow=2)+
+  geom_smooth(data=data_longLearning, mapping=aes(x=Learning_Effect, y=Ratings), method='lm')+
+  xlim(-40,40)
+
+
+
+sample code : 
+
+data_longLearning<-data_longLearning[data_longLearning$Learning_Effect > (-1.),]
+> ggplot(aes(x=Learning_Effect,y=Ratings), data=data_longLearning) +
++     geom_point(alpha=0.5, group=data_longLearning$BOA) +
++     labs(x= "Learning-Effect", y="Ratings")+
++     geom_smooth(method=lm)+
++     facet_wrap(~data_longLearning$BOA, nrow=2)
+
+
+###For Learning effect ==== Session & Feedback (Final Code OA)
+
+data_longLearning<-data_longLearning[data_longLearning$Learning_Effect > (-1.),]
+   ggplot(aes(x=Learning_Effect,y=Ratings), data=data_longLearning) +
+     geom_point(data=data_longLearning, mapping=aes(x=Learning_Effect, y=Ratings, color=Feedback, shape=Session)) +
+     labs(x= "Learning-Effect", y="Ratings")+
+     geom_smooth(method=lm)+
+     facet_wrap(~data_longLearning$BOA, nrow=2)
+
+
+###For Learning effect ==== Session & Feedback (Final Code OA)
+
+data_longLearningOA<-data_longLearningOA[data_longLearningOA$Learning_Effect > (-1.),]
+   ggplot(aes(x=Learning_Effect,y=Ratings), data=data_longLearningOA) +
+     geom_point(data=data_longLearningOA, mapping=aes(x=Learning_Effect, y=Ratings, color=Feedback, shape=Session)) +
+     labs(x= "Learning-Effect", y="Ratings")+
+     geom_smooth(method=lm)+
+     facet_wrap(~data_longLearningOA$BOA, nrow=2)
+
+
+
+
+If to have session and feedback together with Residual , BO BA ....
+
+ggplot(data=data_long) +
+  geom_point(data=data_long, mapping=aes(x=RES_Error_mm, y=measure, color=Feedback, shape=Session))+
+  facet_wrap(~BOA, nrow=2)+
+  geom_smooth(data=data_long, mapping=aes(x=RES_Error_mm, y=measure), method='lm')+
+  xlim(-40,40)
+
+
+
+datasetMean <- read_excel("Link to directory_filename.xlsx", sheet = "Tabelle1")
+ggplot(data=datasetMean, aes(x=Res_Error_H,y=Res_Error_V)) +
+  geom_point(alpha=0.5) +
+  labs(x= "Mean Residual Error Mediolateral", y="Mean Residual Error Proximodistal") +
+  geom_abline(intercept = 0, slope = 1)
